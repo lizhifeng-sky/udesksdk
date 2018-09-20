@@ -27,11 +27,11 @@ public class UdeskInitKeyActivity extends Activity {
 //    private String UDESK_SECRETKEY = "f71b983d30bb41a23cba209a5558cf8f";
 
     //替换成你们注册生成的域名
-    private String UDESK_DOMAIN = "udesksdk.udesk.cn";
+    private String UDESK_DOMAIN = "qtools.udesk.cn";
     //替换成你们生成应用产生的appid
-    private String AppId = "cdc6da4fa97efc2c";
+    private String AppId = "98c0e8fdbc9615b2";
     // 替换成你们在后台生成的密钥
-    private String UDESK_SECRETKEY = "6c37f775019907785d85c027e29dae4e";
+    private String UDESK_SECRETKEY = "e82edb1444fc35d37f70b5137d87aa1e";
 
 
     private EditText mDomainEdit;
@@ -43,9 +43,9 @@ public class UdeskInitKeyActivity extends Activity {
 
     private Button startBtn;
 
-    String domain = "";
-    String appkey = "";
-    String appid = "";
+    String domain = UDESK_DOMAIN;
+    String appkey = UDESK_SECRETKEY;
+    String appid = AppId;
     String sdkToken = "";
 
     @Override
@@ -53,7 +53,7 @@ public class UdeskInitKeyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.udesk_init_key_view);
         //传入注册的域名和密钥
-        redDoaminAndKey();
+//        redDoaminAndKey();
         mDomainEdit = (EditText) findViewById(R.id.udesk_domain);
         mKeyEdit = (EditText) findViewById(R.id.udesk_appkey);
         mAppidEdit = (EditText) findViewById(R.id.appid);

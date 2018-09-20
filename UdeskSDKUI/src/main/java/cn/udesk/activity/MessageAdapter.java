@@ -38,10 +38,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import cn.udesk.JsonUtils;
 import cn.udesk.R;
@@ -63,7 +64,7 @@ import udesk.core.utils.UdeskUtils;
 import static android.util.Patterns.PHONE;
 import static android.util.Patterns.WEB_URL;
 
-public class MessageAdatper extends BaseAdapter {
+public class MessageAdapter extends BaseAdapter {
     private static final int[] layoutRes = {
             R.layout.udesk_chat_msg_item_txt_l,//文本消息左边的UI布局文件
             R.layout.udesk_chat_msg_item_txt_r,//文本消息右边的UI布局文件
@@ -86,6 +87,7 @@ public class MessageAdatper extends BaseAdapter {
             R.layout.udesk_chat_msg_item_smallvideo_l,//短视频消息左
             R.layout.udesk_chat_msg_item_smallvideo_r,//短视频消息右
             R.layout.udesk_chat_msg_item_product_r, //商品消息右
+            R.layout.udesk_chat_commodity_item  //显示商品信息的UI布局文件
     };
 
     /**
@@ -147,6 +149,8 @@ public class MessageAdatper extends BaseAdapter {
     private static final int MSG_SMALL_VIDEO_R = 19;
     private static final int MSG_PRODUCT_R = 20;
 
+    private static final int MSG_CUSTOM_PRODUCT = 21;
+
 
     //2条消息之间 时间间隔超过SPACE_TIME， 会话界面会显示出消息的收发时间
     private static final long SPACE_TIME = 3 * 60 * 1000;
@@ -155,7 +159,7 @@ public class MessageAdatper extends BaseAdapter {
     private List<MessageInfo> list = new ArrayList<>();
 
 
-    MessageAdatper(Activity context) {
+    MessageAdapter(Activity context) {
         mContext = context;
 
     }
@@ -190,6 +194,12 @@ public class MessageAdatper extends BaseAdapter {
                         return MSG_IMG_R;
                     }
                 case UdeskConst.ChatMsgTypeInt.TYPE_TEXT:
+                    //todo 自定义json数据 做商品 start
+                    String messageContent = message.getMsgContent();
+                    if (messageContent.startsWith("json")) {
+                        return MSG_CUSTOM_PRODUCT;
+                    }
+                    //todo 自定义json数据 做商品 end
                     if (message.getDirection() == UdeskConst.ChatMsgDirection.Recv) {
                         return MSG_TXT_L;
                     } else {
@@ -342,7 +352,6 @@ public class MessageAdatper extends BaseAdapter {
             e.printStackTrace();
         }
     }
-
 
     void listAddEventItems(List<MessageInfo> messages) {
         try {
@@ -546,6 +555,17 @@ public class MessageAdatper extends BaseAdapter {
                         UdekConfigUtil.setUITextColor(UdeskSDKManager.getInstance().getUdeskConfig().udeskIMRightTextColorResId, videoTxtViewHolder.tvMsg);
                         convertView.setTag(videoTxtViewHolder);
                         break;
+                    //todo 自定义json数据 做商品 start
+                    case MSG_CUSTOM_PRODUCT:
+                        CustomProductViewHolder customProductViewHolder = new CustomProductViewHolder();
+                        initItemNormalView(convertView, customProductViewHolder);
+                        customProductViewHolder.time = (TextView) convertView.findViewById(R.id.time_custom);
+                        customProductViewHolder.goodImage = (SimpleDraweeView) convertView.findViewById(R.id.goodImage);
+                        customProductViewHolder.name = (TextView) convertView.findViewById(R.id.name);
+                        customProductViewHolder.describe = (TextView) convertView.findViewById(R.id.describe);
+                        customProductViewHolder.link = (TextView) convertView.findViewById(R.id.link);
+                        convertView.setTag(customProductViewHolder);
+                        break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -555,12 +575,12 @@ public class MessageAdatper extends BaseAdapter {
     }
 
 
-    abstract class BaseViewHolder {
+    public abstract class BaseViewHolder {
         SimpleDraweeView ivHeader;
         ImageView ivStatus;
         TextView tvTime;
         ProgressBar pbWait;
-        TextView agentnickName;
+        TextView agentNickName;
         MessageInfo message;
         int itemType;
         boolean isLeft = false;
@@ -607,10 +627,10 @@ public class MessageAdatper extends BaseAdapter {
                             UdeskUtil.loadHeadView(mContext, ivHeader, Uri.parse(message.getUser_avatar()));
                         }
                         if (!TextUtils.isEmpty(message.getReplyUser())) {
-                            agentnickName.setVisibility(View.VISIBLE);
-                            agentnickName.setText(message.getReplyUser());
+                            agentNickName.setVisibility(View.VISIBLE);
+                            agentNickName.setText(message.getReplyUser());
                         } else {
-                            agentnickName.setVisibility(View.GONE);
+                            agentNickName.setVisibility(View.GONE);
                         }
 
                         break;
@@ -754,7 +774,7 @@ public class MessageAdatper extends BaseAdapter {
                     if (!phone.startsWith("tel:")) {
                         phone = "tel:" + mUrl;
                     }
-                    ((UdeskChatActivity) mContext).callphone(phone);
+                    ((UdeskChatActivity) mContext).callPhone(phone);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -841,6 +861,40 @@ public class MessageAdatper extends BaseAdapter {
                         ((UdeskChatActivity) mContext).retrySendMsg(message);
                     }
                 });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 展示文本消息
+     */
+    //todo 自定义消息holder
+    class CustomProductViewHolder extends BaseViewHolder {
+        TextView time;
+        SimpleDraweeView goodImage;
+        TextView name;
+        TextView describe;
+        TextView link;
+
+        @Override
+        void bind(Context context) {
+            try {
+                String content = null;
+                //设置文本消息内容，表情符转换对应的表情,没表情的另外处理
+//                if (MoonUtils.isHasEmotions(message.getMsgContent())) {
+//                    tvMsg.setText(MoonUtils.replaceEmoticons(context, message.getMsgContent(),
+//                            (int) tvMsg.getTextSize()));
+//                } else {
+//
+//                }
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                time.setText("当前时间：" + simpleDateFormat.format(message.getTime()));
+                name.setText("这是商品名称啊" + message.getMsgContent());
+                describe.setText("这是描述啊——————" + message.getMsgContent());
+                goodImage.setImageURI("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
+                link.setText(message.getCreatedTime());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1395,7 +1449,7 @@ public class MessageAdatper extends BaseAdapter {
                     public void onClick(View view) {
                         message.setSendFlag(UdeskConst.SendFlag.RESULT_FAIL);
                         showFailureView();
-                        ((UdeskChatActivity) mContext).cancleSendVideoMsg(message);
+                        ((UdeskChatActivity) mContext).cancelSendVideoMsg(message);
                     }
                 });
             } catch (Exception e) {
@@ -1514,7 +1568,6 @@ public class MessageAdatper extends BaseAdapter {
 
         @Override
         void bind(Context context) {
-
             try {
                 final String[] locationMessage = message.getMsgContent().split(";");
                 locationValue.setText(locationMessage[locationMessage.length - 1]);
@@ -1522,7 +1575,6 @@ public class MessageAdatper extends BaseAdapter {
                 cropBitMap.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         if (UdeskSDKManager.getInstance().getUdeskConfig().locationMessageClickCallBack != null) {
                             UdeskSDKManager.getInstance().getUdeskConfig().locationMessageClickCallBack.luanchMap(mContext, Double.valueOf(locationMessage[0]),
                                     Double.valueOf(locationMessage[1]), locationMessage[locationMessage.length - 1]);
@@ -1688,9 +1740,9 @@ public class MessageAdatper extends BaseAdapter {
             holder.tvTime = (TextView) convertView.findViewById(R.id.udesk_tv_time);
             holder.ivStatus = (ImageView) convertView.findViewById(R.id.udesk_iv_status);
             holder.pbWait = (ProgressBar) convertView.findViewById(R.id.udesk_im_wait);
-            holder.agentnickName = (TextView) convertView.findViewById(R.id.udesk_nick_name);
+            holder.agentNickName = (TextView) convertView.findViewById(R.id.udesk_nick_name);
             UdekConfigUtil.setUITextColor(UdeskSDKManager.getInstance().getUdeskConfig().udeskIMTimeTextColorResId, holder.tvTime);
-            UdekConfigUtil.setUITextColor(UdeskSDKManager.getInstance().getUdeskConfig().udeskIMAgentNickNameColorResId, holder.agentnickName);
+            UdekConfigUtil.setUITextColor(UdeskSDKManager.getInstance().getUdeskConfig().udeskIMAgentNickNameColorResId, holder.agentNickName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1895,7 +1947,6 @@ public class MessageAdatper extends BaseAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 

@@ -819,7 +819,7 @@ public class ChatActivityPresenter {
     }
 
     //封装发送文本消息
-    public void sendTxtMessage(String msgString) {
+    public MessageInfo sendTxtMessage(String msgString) {
         try {
             MessageInfo msg = buildSendMessage(
                     UdeskConst.ChatMsgTypeString.TYPE_TEXT,
@@ -828,18 +828,18 @@ public class ChatActivityPresenter {
             mChatView.clearInputContent();
             mChatView.addMessage(msg);
             if (isNeedAddCachePre(msg)) {
-                return;
+                return msg;
             }
             messageSave(msg);
 
-
+            return msg;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
     public void sendProductMessage(Product mProduct) {
-
         if (mProduct == null) {
             return;
         }
@@ -1181,8 +1181,6 @@ public class ChatActivityPresenter {
             if (TextUtils.isEmpty(customerId)) {
                 return;
             }
-
-
             UdeskHttpFacade.getInstance().messageSave(UdeskSDKManager.getInstance().getDomain(mChatView.getContext()),
                     UdeskSDKManager.getInstance().getAppkey(mChatView.getContext()),
                     UdeskSDKManager.getInstance().getSdkToken(mChatView.getContext()),

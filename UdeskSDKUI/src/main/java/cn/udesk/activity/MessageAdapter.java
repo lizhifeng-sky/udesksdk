@@ -19,6 +19,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,13 +43,16 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import cn.udesk.JsonUtils;
 import cn.udesk.R;
 import cn.udesk.UdeskSDKManager;
 import cn.udesk.UdeskUtil;
+import cn.udesk.bean.CustomProductBean;
 import cn.udesk.config.UdekConfigUtil;
 import cn.udesk.db.UdeskDBManager;
 import cn.udesk.emotion.MoonUtils;
@@ -194,12 +199,6 @@ public class MessageAdapter extends BaseAdapter {
                         return MSG_IMG_R;
                     }
                 case UdeskConst.ChatMsgTypeInt.TYPE_TEXT:
-                    //todo 自定义json数据 做商品 start
-                    String messageContent = message.getMsgContent();
-                    if (messageContent.startsWith("json")) {
-                        return MSG_CUSTOM_PRODUCT;
-                    }
-                    //todo 自定义json数据 做商品 end
                     if (message.getDirection() == UdeskConst.ChatMsgDirection.Recv) {
                         return MSG_TXT_L;
                     } else {
@@ -247,6 +246,15 @@ public class MessageAdapter extends BaseAdapter {
                         return MSG_Video_Txt_R;
                     }
                 case UdeskConst.ChatMsgTypeInt.TYPE_PRODUCT:
+                    //todo 自定义json数据 做商品 start
+                    /**
+                     * {@link cn.udesk.presenter.ChatActivityPresenter#sendProductMessage}
+                     * {@link MessageAdapter.CustomProductViewHolder}
+                     */
+                    if (message.getFilesize().equals("product")) {
+                        return MSG_CUSTOM_PRODUCT;
+                    }
+                    //todo 自定义json数据 做商品 end
                     if (message.getDirection() == UdeskConst.ChatMsgDirection.Send) {
                         return MSG_PRODUCT_R;
                     }
@@ -881,20 +889,22 @@ public class MessageAdapter extends BaseAdapter {
         @Override
         void bind(Context context) {
             try {
-                String content = null;
-                //设置文本消息内容，表情符转换对应的表情,没表情的另外处理
-//                if (MoonUtils.isHasEmotions(message.getMsgContent())) {
-//                    tvMsg.setText(MoonUtils.replaceEmoticons(context, message.getMsgContent(),
-//                            (int) tvMsg.getTextSize()));
-//                } else {
-//
-//                }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-                time.setText("当前时间：" + simpleDateFormat.format(message.getTime()));
-                name.setText("这是商品名称啊" + message.getMsgContent());
-                describe.setText("这是描述啊——————" + message.getMsgContent());
-                goodImage.setImageURI("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
-                link.setText(message.getCreatedTime());
+                CustomProductBean customProductBean = new Gson().fromJson(message.getMsgContent(), CustomProductBean.class);
+                if (customProductBean.getName().equals("这是商品名称啊123")) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                    time.setText("当前时间：" + simpleDateFormat.format(message.getTime()));
+                    name.setText(customProductBean.getName());
+                    describe.setText("这是描述啊——————");
+                    goodImage.setImageURI(customProductBean.getImgUrl());
+                    link.setText(customProductBean.getUrl());
+                }else {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                    time.setText("当前时间：" + simpleDateFormat.format(message.getTime()));
+                    name.setText(customProductBean.getName());
+                    describe.setText("这是描述啊——————");
+                    goodImage.setImageURI(customProductBean.getImgUrl());
+                    link.setText(customProductBean.getUrl());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

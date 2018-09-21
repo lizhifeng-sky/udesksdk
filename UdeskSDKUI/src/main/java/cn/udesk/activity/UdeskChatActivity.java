@@ -51,7 +51,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import cn.udesk.PreferenceHelper;
@@ -104,6 +106,10 @@ import udesk.core.utils.UdeskUtils;
 import udesk.core.xmpp.XmppInfo;
 
 
+/**
+ * 发送默认数据
+ * {@link UdeskChatActivity#sendDefaultMessage()}
+ */
 public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivityView, IEmotionSelectedListener,
         OnClickListener {
     private LinearLayout mContentLinearLayout;//消息内容区域
@@ -221,8 +227,11 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
                     return;
                 boolean isNetWorkEnable = UdeskUtils.isNetworkConnected(context);
                 if (isNetWorkEnable) {
+                    //todo
+//                    mPresenter.sendTxtMessage("wociao");
                     if (!currentStatusIsOnline && isNeedRelogin) {
                         if (isbolcked.equals("true")) {
+
                             return;
                         }
                         if (UdeskSDKManager.getInstance().getImSetting() != null && !UdeskSDKManager.getInstance().getImSetting().getIs_worktime()) {
@@ -269,9 +278,6 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
                             if (UdeskSDKManager.getInstance().getUdeskConfig().commodity != null) {
                                 activity.showCommodity(UdeskSDKManager.getInstance().getUdeskConfig().commodity);
                             }
-                            //todo 自己添加的
-                            presenter.sendTxtMessage("json测试啊");
-
                             int selectIndex = msgs.size();
                             if (msg.arg1 == activity.pullEVentModel) {
                                 activity.mChatAdapter.listAddEventItems(msgs);
@@ -522,7 +528,6 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
 
             mPresenter = new ChatActivityPresenter(this);
             messageHandler = new MessageHandler(UdeskChatActivity.this, mPresenter);
-
             InvokeEventContainer.getInstance().event_IsOver.bind(this, "isOverConversation");
             isOverConversation = false;
             initIntent();
@@ -1574,9 +1579,70 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
 
     //客户设置的第一句默认消息
     private void sendDefaultMessage() {
-        if (!TextUtils.isEmpty(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage) && mPresenter != null) {
-            mPresenter.sendTxtMessage(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage);
-        }
+//        UdeskCommodityItem item = new UdeskCommodityItem();
+//        item.setTitle("木林森男鞋新款2016夏季透气网鞋男士休闲鞋网面韩版懒人蹬潮鞋子");// 商品主标题
+//        item.setSubTitle("¥ 99.00");//商品副标题
+//        item.setThumbHttpUrl("https://img.alicdn.com/imgextra/i1/1728293990/TB2ngm0qFXXXXcOXXXXXXXXXXXX_!!1728293990.jpg_430x430q90.jpg");// 左侧图片
+//        item.setCommodityUrl("https://detail.tmall.com/item.htm?spm=a1z10.3746-b.w4946-14396547293.1.4PUcgZ&id=529634221064&sku_properties=-1:-1");// 商品网络链接
+//        mPresenter.sendCommodityMessage(item);
+
+        Product product = new Product();
+        product.setImgUrl("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
+        product.setName(" Apple iPhone X (A1903) 64GB 深空灰色 移动联通4G手机");
+        product.setUrl("https://item.jd.com/6748052.html");
+
+        List<Product.ParamsBean> paramsBeans = new ArrayList<>();
+
+        Product.ParamsBean paramsBean0 = new Product.ParamsBean();
+        paramsBean0.setText("京 东 价  ");
+        paramsBean0.setColor("我次奥");
+        paramsBean0.setFold(false);
+        paramsBean0.setBreakX(false);
+        paramsBean0.setSize(12);
+
+        Product.ParamsBean paramsBean1 = new Product.ParamsBean();
+        paramsBean1.setText("￥6999.00");
+        paramsBean1.setColor("zheshi sha ");
+        paramsBean1.setFold(true);
+        paramsBean1.setBreakX(true);
+        paramsBean1.setSize(16);
+
+        Product.ParamsBean paramsBean2 = new Product.ParamsBean();
+        paramsBean2.setText("促　销  ");
+        paramsBean2.setColor("我那只大");
+        paramsBean2.setFold(false);
+        paramsBean2.setBreakX(false);
+        paramsBean2.setSize(12);
+
+        Product.ParamsBean paramsBean3 = new Product.ParamsBean();
+        paramsBean3.setText("满1999元另加30元，或满2999元另加50元，即可在购物车换购热销商品 ");
+        paramsBean3.setColor("我不信");
+        paramsBean3.setFold(true);
+        paramsBean3.setBreakX(false);
+        paramsBean3.setSize(16);
+        paramsBeans.add(paramsBean0);
+        paramsBeans.add(paramsBean1);
+        paramsBeans.add(paramsBean2);
+        paramsBeans.add(paramsBean3);
+
+        //            //todo 自己添加的
+        Product product2 = new Product();
+        product2.setImgUrl("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
+        product2.setName("这是商品名称啊123");
+        product2.setUrl("https://www.baidu.com");
+//        Map<String, String> map = new HashMap<>();
+//        map.put("godPrice", "10.00");
+//        map.put("silverPrice", "12.00");
+//        map.put("price", "14.00");
+//        map.put("level", "1");
+//        List<Map<String, String>> list = new ArrayList<>();
+//        list.add(map);
+        product2.setParams(paramsBeans);
+        mPresenter.sendProductMessage(product2);
+//        if (!TextUtils.isEmpty(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage) && mPresenter != null) {
+////            mPresenter.sendTxtMessage(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage);
+//            mPresenter.sendTxtMessage("你好");
+//        }
     }
 
     //启动手机默认的选择照片

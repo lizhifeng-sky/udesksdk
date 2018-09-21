@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -855,7 +856,6 @@ public class ChatActivityPresenter {
             if (!TextUtils.isEmpty(mProduct.getImgUrl())) {
                 jsonObject.put("imgUrl", mProduct.getImgUrl());
             }
-
             List<Product.ParamsBean> params = mProduct.getParams();
             if (params != null && params.size() > 0) {
                 JSONArray jsonsArray = new JSONArray();
@@ -868,41 +868,18 @@ public class ChatActivityPresenter {
                     param.put("size", paramsBean.getSize());
                     jsonsArray.put(param);
                 }
-
                 jsonObject.put("params", jsonsArray);
             }
-
+            //todo 自定义商品类型
             MessageInfo msg = buildSendMessage(
                     UdeskConst.ChatMsgTypeString.TYPE_PRODUCT,
-                    System.currentTimeMillis(), jsonObject.toString(), "", "", "");
+                    System.currentTimeMillis(), jsonObject.toString(), "", "", "product");
             saveMessage(msg);
             mChatView.addMessage(msg);
             if (isNeedAddCachePre(msg)) {
                 return;
             }
             messageSave(msg);
-
-//            List<Product.ParamsBean> params = mProduct.getParams();
-//            StringBuilder builder = new StringBuilder();
-//            if(params != null && params.size()>0){
-//
-//                for (Product.ParamsBean paramsBean : params){
-//
-//                    if (TextUtils.isEmpty(paramsBean.getText())){
-//                        continue;
-//                    }
-//                    String textStr = "<font color=" + paramsBean.getColor() +
-//                            "size=" + paramsBean.getSize() + ">" + paramsBean.getText()+"</font>";
-//                    if (paramsBean.isFold()){
-//                        textStr = "<b>"+ textStr + "</b>"
-//                    }
-//                    if (paramsBean.isBreakX()){
-//                        textStr = textStr + "</br>";
-//                    }
-//                    builder.append(textStr);
-//                }
-//
-//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

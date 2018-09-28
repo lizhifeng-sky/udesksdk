@@ -1586,10 +1586,10 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
 //        item.setCommodityUrl("https://detail.tmall.com/item.htm?spm=a1z10.3746-b.w4946-14396547293.1.4PUcgZ&id=529634221064&sku_properties=-1:-1");// 商品网络链接
 //        mPresenter.sendCommodityMessage(item);
 
-        Product product = new Product();
-        product.setImgUrl("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
-        product.setName(" Apple iPhone X (A1903) 64GB 深空灰色 移动联通4G手机");
-        product.setUrl("https://item.jd.com/6748052.html");
+        //        if (!TextUtils.isEmpty(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage) && mPresenter != null) {
+////            mPresenter.sendTxtMessage(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage);
+//            mPresenter.sendTxtMessage("你好");
+//        }
 
         List<Product.ParamsBean> paramsBeans = new ArrayList<>();
 
@@ -1598,28 +1598,28 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
         paramsBean0.setColor("我次奥");
         paramsBean0.setFold(false);
         paramsBean0.setBreakX(false);
-        paramsBean0.setSize(12);
+        paramsBean0.setSize(0);
 
         Product.ParamsBean paramsBean1 = new Product.ParamsBean();
         paramsBean1.setText("￥6999.00");
         paramsBean1.setColor("zheshi sha ");
         paramsBean1.setFold(true);
         paramsBean1.setBreakX(true);
-        paramsBean1.setSize(16);
+        paramsBean1.setSize(0);
 
         Product.ParamsBean paramsBean2 = new Product.ParamsBean();
         paramsBean2.setText("促　销  ");
         paramsBean2.setColor("我那只大");
         paramsBean2.setFold(false);
         paramsBean2.setBreakX(false);
-        paramsBean2.setSize(12);
+        paramsBean2.setSize(0);
 
         Product.ParamsBean paramsBean3 = new Product.ParamsBean();
         paramsBean3.setText("满1999元另加30元，或满2999元另加50元，即可在购物车换购热销商品 ");
         paramsBean3.setColor("我不信");
         paramsBean3.setFold(true);
         paramsBean3.setBreakX(false);
-        paramsBean3.setSize(16);
+        paramsBean3.setSize(0);
         paramsBeans.add(paramsBean0);
         paramsBeans.add(paramsBean1);
         paramsBeans.add(paramsBean2);
@@ -1630,19 +1630,9 @@ public class UdeskChatActivity extends UdeskBaseActivity implements IChatActivit
         product2.setImgUrl("http://img12.360buyimg.com/n1/s450x450_jfs/t10675/253/1344769770/66891/92d54ca4/59df2e7fN86c99a27.jpg");
         product2.setName("这是商品名称啊123");
         product2.setUrl("https://www.baidu.com");
-//        Map<String, String> map = new HashMap<>();
-//        map.put("godPrice", "10.00");
-//        map.put("silverPrice", "12.00");
-//        map.put("price", "14.00");
-//        map.put("level", "1");
-//        List<Map<String, String>> list = new ArrayList<>();
-//        list.add(map);
         product2.setParams(paramsBeans);
         mPresenter.sendProductMessage(product2);
-//        if (!TextUtils.isEmpty(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage) && mPresenter != null) {
-////            mPresenter.sendTxtMessage(UdeskSDKManager.getInstance().getUdeskConfig().firstMessage);
-//            mPresenter.sendTxtMessage("你好");
-//        }
+
     }
 
     //启动手机默认的选择照片

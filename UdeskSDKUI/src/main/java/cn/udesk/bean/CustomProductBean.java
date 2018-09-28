@@ -13,7 +13,7 @@ public class CustomProductBean {
     private String name;
     private String url;
     private String imgUrl;
-    private List<Product.ParamsBean> params;
+    private List<CustomParamsBean> params;
 
     public String getName() {
         return name;
@@ -31,11 +31,11 @@ public class CustomProductBean {
         this.url = url;
     }
 
-    public List<Product.ParamsBean> getParams() {
+    public List<CustomParamsBean> getParams() {
         return params;
     }
 
-    public void setParams(List<Product.ParamsBean> params) {
+    public void setParams(List<CustomParamsBean> params) {
         this.params = params;
     }
 

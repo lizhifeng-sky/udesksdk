@@ -77,6 +77,7 @@ public class UdeskFuncationExampleActivity extends Activity implements CompoundB
             updatetextfiledkey, updatetextfiledvalue,
             firstMessage, customerUrl, robot_modelKey, robpt_customer_info;
 
+    private String kefuId = "95278";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -320,11 +321,11 @@ public class UdeskFuncationExampleActivity extends Activity implements CompoundB
 
     private Map<String, String> getUpdateDefinedRoplist() {
         Map<String, String> definedRoplistInfos = new HashMap<>();
-        definedRoplistInfos.put("11","11");
-        definedRoplistInfos.put("11","11");
-        definedRoplistInfos.put("11","11");
-        definedRoplistInfos.put("11","11");
-        definedRoplistInfos.put("11","11");
+        definedRoplistInfos.put("11", "11");
+        definedRoplistInfos.put("11", "11");
+        definedRoplistInfos.put("11", "11");
+        definedRoplistInfos.put("11", "11");
+        definedRoplistInfos.put("11", "11");
         return definedRoplistInfos;
     }
 
@@ -432,7 +433,7 @@ public class UdeskFuncationExampleActivity extends Activity implements CompoundB
                         return;
                     }
                     UdeskSDKManager.getInstance().entryChat(getApplicationContext(),
-                            makeBuilder().setAgentId(editText.getText().toString().trim(), true).build(),
+                            makeBuilder().setAgentId(editText.getText().toString(), true).build(),
                             PreferenceHelper.readString(getApplicationContext(), "init_base_name", "sdktoken")
                     );
                 }
